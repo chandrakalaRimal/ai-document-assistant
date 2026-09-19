@@ -46,6 +46,15 @@ app.UseSwaggerUI();
 
 app.UseCors("Frontend");
 
+app.MapGet("/health", () =>
+{
+    return Results.Ok(new
+    {
+        status = "healthy",
+        service = "AI Document Assistant API"
+    });
+});
+
 app.MapControllers();
 
 
