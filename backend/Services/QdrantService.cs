@@ -13,13 +13,71 @@ public class QdrantService
 
     private readonly QdrantClient _client;
 
-    public QdrantService()
+    // public QdrantService()
+    // {
+    //     _client = new QdrantClient(
+    //         host: "localhost",
+    //         port: 6334
+    //     );
+    // }
+
+    // public QdrantService(IConfiguration configuration)
+    // {
+    //     var host =
+    //         configuration["Qdrant:Host"]
+    //         ?? "localhost";
+
+    //     var apiKey =
+    //         configuration["Qdrant:ApiKey"];
+
+    //     var isCloud =
+    //         !string.IsNullOrWhiteSpace(apiKey);
+
+    //     _client = new QdrantClient(
+    //         host: host,
+    //         port: isCloud ? 443 : 6334,
+    //         https: isCloud,
+    //         apiKey: apiKey
+    //     );
+    // }
+
+    public QdrantService(IConfiguration configuration)
+{
+    var configuredHost =
+        configuration["Qdrant:Host"]
+        ?? "localhost";
+
+    var apiKey =
+        configuration["Qdrant:ApiKey"];
+
+    var isCloud =
+        !string.IsNullOrWhiteSpace(apiKey);
+
+    var host = configuredHost;
+
+    // Allows either:
+    // abc123.cloud.qdrant.io
+    // OR
+    // https://abc123.cloud.qdrant.io
+    if (
+        Uri.TryCreate(
+            configuredHost,
+            UriKind.Absolute,
+            out var uri
+        )
+    )
     {
-        _client = new QdrantClient(
-            host: "localhost",
-            port: 6334
-        );
+        host = uri.Host;
     }
+
+    _client = new QdrantClient(
+        host: host,
+        port: 6334,
+        https: isCloud,
+        apiKey: isCloud ? apiKey : null
+    );
+}
+    
 
     public async Task EnsureCollectionAsync()
     {
