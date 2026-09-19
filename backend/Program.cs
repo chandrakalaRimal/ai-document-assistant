@@ -26,12 +26,28 @@ builder.Services.AddHttpClient<GroqService>();
 
 
 // React will run separately
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("Frontend", policy =>
+//     {
+//         policy
+//             .WithOrigins("http://localhost:5173")
+//             .AllowAnyHeader()
+//             .AllowAnyMethod();
+//     });
+// });
+
+
+var frontendUrl =
+    builder.Configuration["FrontendUrl"]
+    ?? "http://localhost:5173";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(frontendUrl)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
